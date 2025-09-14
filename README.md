@@ -1,27 +1,23 @@
 # Quantum Algorithms Tutorial
-
-A hands-on tutorial repository demonstrating quantum algorithms like Quantum Teleportation and Grover's Search using Qiskit, targeted at technical learners new to quantum programming.
+A hands-on tutorial repository demonstrating quantum algorithms like Quantum Teleportation, Grover's Search, and quantum simulations for astrophysics using Qiskit, targeted at technical learners new to quantum programming.
 
 ## Overview
-
-This repository provides practical implementations of fundamental quantum algorithms with comprehensive explanations and interactive Jupyter notebooks. Perfect for developers, researchers, and students looking to understand quantum computing concepts through hands-on coding.
+This repository provides practical implementations of fundamental quantum algorithms with comprehensive explanations and interactive Jupyter notebooks. Perfect for developers, researchers, and students looking to understand quantum computing concepts through hands-on coding, including applications to astrophysical phenomena like black holes and gravitational waves.
 
 ## Features
-
 - **Quantum Teleportation**: Complete implementation with circuit visualization
 - **Grover's Search Algorithm**: Optimized quantum search with performance analysis
+- **Black Hole Toy Model**: Quantum simulation of simplified black hole physics and gravitational wave patterns
 - **Interactive Notebooks**: Step-by-step tutorials with explanations
 - **Unit Tests**: Comprehensive test suite for all implementations
 - **Documentation**: Detailed API documentation and usage examples
 
 ## Installation
-
 ### Prerequisites
 - Python 3.8+
 - pip package manager
 
 ### Setup
-
 1. Clone the repository:
 ```bash
 git clone https://github.com/FusselChris/quantum-algorithms-tutorial.git
@@ -39,12 +35,11 @@ jupyter notebook notebooks/tutorial.ipynb
 ```
 
 ## Usage
-
 ### Quick Start
-
 ```python
 from src.teleportation import QuantumTeleportation
 from src.grover import GroverSearch
+from src.black_hole_toy import BlackHoleToyModel
 
 # Quantum Teleportation Example
 teleporter = QuantumTeleportation()
@@ -55,123 +50,88 @@ print(f"Teleportation success: {result}")
 grover = GroverSearch(n_qubits=3)
 result = grover.search([2, 5])  # Search for items at indices 2 and 5
 print(f"Found items: {result}")
+
+# Black Hole Toy Model Example
+black_hole = BlackHoleToyModel(mass=10, spin=0.5)
+entanglement = black_hole.hawking_radiation_entanglement()
+print(f"Hawking radiation entanglement: {entanglement}")
+
+# Gravitational wave simulation
+gw_amplitude = black_hole.gravitational_wave_amplitude(distance=100, time=0.1)
+print(f"Gravitational wave amplitude: {gw_amplitude}")
 ```
 
-### Directory Structure
+### Astrophysics Quantum Simulations
+The repository now includes quantum simulations for astrophysical phenomena:
 
+#### Black Hole Physics
+- Hawking radiation entanglement simulation
+- Event horizon quantum effects
+- Information paradox demonstrations
+
+#### Gravitational Waves
+- Quantum-enhanced detection algorithms
+- Wave amplitude calculations
+- Interferometer sensitivity modeling
+
+### Running the Astrophysics Notebook
+```bash
+jupyter notebook notebooks/quantum_for_astrophysics.ipynb
+```
+
+This notebook includes:
+- Interactive black hole parameter exploration
+- Gravitational wave visualization
+- Quantum entanglement analysis
+- Performance comparisons with classical methods
+
+### Directory Structure
 ```
 quantum-algorithms-tutorial/
 ├── src/
-│   ├── __init__.py
-│   ├── teleportation.py    # Quantum teleportation implementation
-│   └── grover.py           # Grover's search algorithm
+│   ├── teleportation.py      # Quantum teleportation implementation
+│   ├── grover.py             # Grover's search algorithm
+│   └── black_hole_toy.py     # Black hole toy model and astrophysics simulations
 ├── tests/
 │   ├── test_teleportation.py
-│   └── test_grover.py
+│   ├── test_grover.py
+│   └── test_black_hole_toy.py # Tests for astrophysics simulations
 ├── notebooks/
-│   └── tutorial.ipynb      # Interactive tutorial
+│   ├── tutorial.ipynb        # Main quantum algorithms tutorial
+│   └── quantum_for_astrophysics.ipynb  # Astrophysics applications
 ├── requirements.txt
-├── README.md
-├── CONTRIBUTING.md
-└── LICENSE
+└── README.md
 ```
 
-## Algorithms Implemented
+## Requirements for Astrophysics Simulations
+Additional dependencies for the black hole toy model:
+```bash
+pip install numpy scipy matplotlib qiskit[visualization] jupyter
+```
 
-### 1. Quantum Teleportation
-
-Quantum teleportation allows the transfer of quantum information from one location to another using quantum entanglement and classical communication.
-
-**Key Features:**
-- Bell state preparation
-- Quantum measurements
-- Classical communication simulation
-- State reconstruction
-- Fidelity verification
-
-### 2. Grover's Search Algorithm
-
-Grover's algorithm provides a quadratic speedup for searching unsorted databases.
-
-**Key Features:**
-- Oracle construction
-- Amplitude amplification
-- Optimal iteration calculation
-- Multi-target search support
-- Success probability analysis
+For advanced visualizations:
+```bash
+pip install plotly seaborn
+```
 
 ## Testing
-
-Run the test suite:
-
+Run all tests including the new astrophysics simulations:
 ```bash
-python -m pytest tests/ -v
+python -m pytest tests/
 ```
 
-For coverage report:
-
+Run specific astrophysics tests:
 ```bash
-python -m pytest tests/ --cov=src --cov-report=html
+python -m pytest tests/test_black_hole_toy.py -v
 ```
 
 ## Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
-
-- Code style and standards
-- Testing requirements
-- Pull request process
-- Bug reporting
-
-## Educational Resources
-
-### Prerequisites Knowledge
-- Basic linear algebra
-- Python programming
-- Basic quantum mechanics concepts (helpful but not required)
-
-### Learning Path
-1. Start with `notebooks/tutorial.ipynb` for interactive learning
-2. Explore source code in `src/` directory
-3. Run and modify the examples
-4. Check out the test files for additional usage patterns
-
-## Performance Notes
-
-- All algorithms are optimized for educational clarity over performance
-- Simulation times increase exponentially with qubit count
-- Use IBM Quantum Experience for larger circuits
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- IBM Qiskit team for the excellent quantum computing framework
-- Quantum computing research community
-- Contributors and educators in quantum algorithm development
-
-## Citation
-
-If you use this tutorial in your research or education, please cite:
-
-```bibtex
-@misc{quantum_algorithms_tutorial,
-  author = {FusselChris},
-  title = {Quantum Algorithms Tutorial: Hands-on Qiskit Implementation},
-  year = {2025},
-  publisher = {GitHub},
-  url = {https://github.com/FusselChris/quantum-algorithms-tutorial}
-}
-```
-
-## Support
-
-For questions, suggestions, or issues:
-
-- Open an issue on GitHub
-- Check existing documentation
-- Review the tutorial notebook for examples
-
-Happy quantum computing! 🚀
+## References
+- Qiskit Documentation: https://qiskit.org/documentation/
+- Quantum Computing for Astrophysics: Recent advances in quantum simulation applications
+- Black Hole Information Paradox: Quantum computational approaches
