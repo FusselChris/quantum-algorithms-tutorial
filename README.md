@@ -1,9 +1,15 @@
+> **⚠️ IMPORTANT SECURITY WARNING ⚠️**
+>
+> **This repository is for educational use only and is not production-hardened.**
+>
+> **The code may lack comprehensive security and reliability checks.**
+>
+> **DO NOT use this repository or its code for quantum-cryptographic or security-critical production applications without an independent security audit.**
+
 # Quantum Algorithms Tutorial
 A hands-on tutorial repository demonstrating quantum algorithms like Quantum Teleportation, Grover's Search, and quantum simulations for astrophysics using Qiskit, targeted at technical learners new to quantum programming.
-
 ## Overview
 This repository provides practical implementations of fundamental quantum algorithms with comprehensive explanations and interactive Jupyter notebooks. Perfect for developers, researchers, and students looking to understand quantum computing concepts through hands-on coding, including applications to astrophysical phenomena like black holes and gravitational waves.
-
 ## Features
 - **Quantum Teleportation**: Complete implementation with circuit visualization
 - **Grover's Search Algorithm**: Optimized quantum search with performance analysis
@@ -13,11 +19,13 @@ This repository provides practical implementations of fundamental quantum algori
 - **Documentation**: Detailed API documentation and usage examples
 
 ## Installation
+
 ### Prerequisites
 - Python 3.8+
 - pip package manager
 
 ### Setup
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/FusselChris/quantum-algorithms-tutorial.git
@@ -35,7 +43,9 @@ jupyter notebook notebooks/tutorial.ipynb
 ```
 
 ## Usage
+
 ### Quick Start
+
 ```python
 from src.teleportation import QuantumTeleportation
 from src.grover import GroverSearch
@@ -62,6 +72,7 @@ print(f"Gravitational wave amplitude: {gw_amplitude}")
 ```
 
 ### Astrophysics Quantum Simulations
+
 The repository now includes quantum simulations for astrophysical phenomena:
 
 #### Black Hole Physics
@@ -75,6 +86,7 @@ The repository now includes quantum simulations for astrophysical phenomena:
 - Interferometer sensitivity modeling
 
 ### Running the Astrophysics Notebook
+
 ```bash
 jupyter notebook notebooks/quantum_for_astrophysics.ipynb
 ```
@@ -86,6 +98,7 @@ This notebook includes:
 - Performance comparisons with classical methods
 
 ### Directory Structure
+
 ```
 quantum-algorithms-tutorial/
 ├── src/
@@ -104,34 +117,43 @@ quantum-algorithms-tutorial/
 ```
 
 ## Requirements for Astrophysics Simulations
+
 Additional dependencies for the black hole toy model:
+
 ```bash
 pip install numpy scipy matplotlib qiskit[visualization] jupyter
 ```
 
 For advanced visualizations:
+
 ```bash
 pip install plotly seaborn
 ```
 
 ## Testing
+
 Run all tests including the new astrophysics simulations:
+
 ```bash
 python -m pytest tests/
 ```
 
 Run specific astrophysics tests:
+
 ```bash
 python -m pytest tests/test_black_hole_toy.py -v
 ```
 
 ## Contributing
+
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
+
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## References
+
 - Qiskit Documentation: https://qiskit.org/documentation/
 - Quantum Computing for Astrophysics: Recent advances in quantum simulation applications
 - Black Hole Information Paradox: Quantum computational approaches
