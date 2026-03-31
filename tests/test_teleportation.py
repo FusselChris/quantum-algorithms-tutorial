@@ -1,7 +1,11 @@
 """Tests for the quantum teleportation implementation."""
 import math
 import pytest
-from src.teleportation import build_teleportation_circuit, quantum_teleportation
+from src.teleportation import (
+    build_teleportation_circuit,
+    quantum_teleportation,
+    verify_teleportation_fidelity,
+)
 
 
 def test_build_circuit_structure():
@@ -58,3 +62,16 @@ def test_invalid_state_raises():
     """Both amplitudes being zero must raise ValueError."""
     with pytest.raises(ValueError):
         quantum_teleportation(0.0, 0.0)
+
+def test_teleportation_fidelity():
+    """Bob's qubit should match the original state with near-perfect fidelity."""
+    fid = verify_teleportation_fidelity(
+        alpha=1 / math.sqrt(2),
+        beta=1j / math.sqrt(2),
+    )
+    assert fid > 0.999, f"Fidelity only {fid:.4f} — teleportation failed"
+
+def test_teleportation_fidelity_rejects_zero_state():
+    """The fidelity helper should reject the zero vector."""
+    with pytest.raises(ValueError):
+        verify_teleportation_fidelity(0.0, 0.0)
