@@ -1,17 +1,13 @@
 """Tests for the black hole toy model and BlackHoleToyModel class."""
 import math
+
 import pytest
-from src.black_hole_toy import black_hole_toy_model, BlackHoleToyModel
 
+from src.black_hole_toy import BlackHoleToyModel, black_hole_toy_model
 
-# --- black_hole_toy_model function tests ---
 
 def test_entropy_is_positive():
-    """Entanglement entropy of a scrambled radiation qubit must be > 0.
-    
-    With seed=42 the scrambling circuit is deterministic, so this is
-    a stable regression test rather than a probabilistic check.
-    """
+    """Entanglement entropy of a scrambled radiation qubit must be > 0."""
     _, ent = black_hole_toy_model()
     assert ent > 0, f"Expected positive entropy, got {ent}"
 
@@ -24,21 +20,40 @@ def test_entropy_bounded():
     )
 
 
+def test_entropy_is_deterministic():
+    """The fixed scrambling seed should make the entropy reproducible."""
+    _, ent1 = black_hole_toy_model()
+    _, ent2 = black_hole_toy_model()
+    assert math.isclose(ent1, ent2, rel_tol=0.0, abs_tol=1e-12)
+
+
 def test_returns_circuit_and_float():
     """Function must return (QuantumCircuit, float)."""
     from qiskit import QuantumCircuit
+
     circuit, ent = black_hole_toy_model()
     assert isinstance(circuit, QuantumCircuit)
     assert isinstance(ent, float)
 
 
+def test_too_few_qubits_raises():
+    """The toy model needs at least 3 qubits."""
+    with pytest.raises(ValueError):
+        black_hole_toy_model(num_qubits=2)
+
+
 # --- BlackHoleToyModel class tests ---
 
+
 def test_schwarzschild_radius_scales_with_mass():
-    """A 20 M☉ black hole should have twice the Schwarzschild radius of a 10 M☉ one."""
+    """A 20 M☉ black hole should have twice the radius of a 10 M☉ one."""
     bh10 = BlackHoleToyModel(mass=10)
     bh20 = BlackHoleToyModel(mass=20)
-    assert math.isclose(bh20.schwarzschild_radius, 2 * bh10.schwarzschild_radius, rel_tol=1e-9)
+    assert math.isclose(
+        bh20.schwarzschild_radius,
+        2 * bh10.schwarzschild_radius,
+        rel_tol=1e-9,
+    )
 
 
 def test_hawking_temperature_positive():
@@ -67,6 +82,7 @@ def test_event_horizon_quantum_effects_keys():
     bh = BlackHoleToyModel(mass=10, spin=0.3)
     result = bh.event_horizon_quantum_effects()
     expected_keys = {
+        "mass_solar_masses",
         "schwarzschild_radius_m",
         "hawking_temperature_K",
         "spin",
@@ -83,11 +99,20 @@ def test_gravitational_wave_amplitude_is_finite():
 
 
 def test_gravitational_wave_amplitude_decreases_with_distance():
-    """More distant sources produce weaker strain (ignoring time oscillation at t=0)."""
+    """More distant sources produce weaker strain."""
     bh = BlackHoleToyModel(mass=30, spin=0.0)
     h_near = bh.gravitational_wave_amplitude(distance=10, time=0.0)
     h_far = bh.gravitational_wave_amplitude(distance=1000, time=0.0)
     assert abs(h_near) > abs(h_far)
+
+
+def test_gravitational_wave_amplitude_requires_positive_distance():
+    """Distance must be positive."""
+    bh = BlackHoleToyModel(mass=10, spin=0.0)
+    with pytest.raises(ValueError):
+        bh.gravitational_wave_amplitude(distance=0, time=0.0)
+    with pytest.raises(ValueError):
+        bh.gravitational_wave_amplitude(distance=-5, time=0.0)
 
 
 def test_invalid_mass_raises():
