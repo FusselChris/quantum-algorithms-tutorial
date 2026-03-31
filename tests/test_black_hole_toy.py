@@ -7,7 +7,11 @@ from src.black_hole_toy import black_hole_toy_model, BlackHoleToyModel
 # --- black_hole_toy_model function tests ---
 
 def test_entropy_is_positive():
-    """Entanglement entropy of a scrambled radiation qubit must be > 0."""
+    """Entanglement entropy of a scrambled radiation qubit must be > 0.
+    
+    With seed=42 the scrambling circuit is deterministic, so this is
+    a stable regression test rather than a probabilistic check.
+    """
     _, ent = black_hole_toy_model()
     assert ent > 0, f"Expected positive entropy, got {ent}"
 
@@ -15,7 +19,9 @@ def test_entropy_is_positive():
 def test_entropy_bounded():
     """Von Neumann entropy of a single qubit is at most 1 bit."""
     _, ent = black_hole_toy_model()
-    assert ent <= 1.05, f"Entropy {ent} exceeds single-qubit maximum of 1 bit"
+    assert 0 < ent <= 1.0 + 1e-9, (
+        f"Entropy {ent:.6f} outside valid range (0, 1] for a single qubit"
+    )
 
 
 def test_returns_circuit_and_float():
