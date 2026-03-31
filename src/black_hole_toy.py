@@ -1,96 +1,94 @@
-"""Black Hole Toy Model — quantum simulation of simplified black hole physics.
+"""Educational black hole toy model for quantum computing tutorials.
 
-Provides:
-  - ``black_hole_toy_model``: function demonstrating black hole information
-    scrambling and Hawking radiation entanglement entropy.
-  - ``BlackHoleToyModel``: class-based API for astrophysics simulations,
-    including Hawking radiation entanglement, event horizon effects, and
-    gravitational wave amplitude modelling.
+This module intentionally models qualitative relationships only. It is useful
+for teaching scrambling, entanglement entropy, horizon-scale quantities, and
+simple scaling laws. It is not a semiclassical gravity solver.
 """
 from __future__ import annotations
 
 import math
-from typing import Tuple
+from typing import Dict, Tuple
 
-import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.random import random_circuit
 from qiskit.quantum_info import Statevector, entropy, partial_trace
-from qiskit_aer import AerSimulator
+
+# Physical constants in SI units.
+G = 6.67430e-11
+C = 299_792_458.0
+HBAR = 1.054_571_817e-34
+K_B = 1.380_649e-23
+M_SUN = 1.988_47e30
+MPC_TO_M = 3.085_677_581_491_367e22
+
+# Schwarzschild radius per solar mass, in metres.
+RS_PER_SOLAR_MASS_METRES = 2.0 * G * M_SUN / C**2
 
 
-def black_hole_toy_model(num_qubits: int = 3) -> Tuple[QuantumCircuit, float]:
-    """Toy model for the black hole information paradox.
+def _require_positive(value: float, name: str) -> None:
+    if value <= 0:
+        raise ValueError(f"{name} must be positive, got {value}")
 
-    Simulates scrambling with a random unitary over three qubits:
-      - Qubit 0: infalling matter
-      - Qubit 1: black hole interior
-      - Qubit 2: Hawking radiation
+
+def black_hole_toy_model(
+    num_qubits: int = 3,
+    scrambling_seed: int = 42,
+) -> Tuple[QuantumCircuit, float]:
+    """Toy model for black hole information scrambling.
+
+    The first three qubits are used as:
+      - q0: infalling matter
+      - q1: black hole interior
+      - q2: Hawking radiation
+
+    Any extra qubits are left idle, which keeps the API flexible while
+    preserving the original 3-qubit educational model.
 
     Args:
-        num_qubits: total number of qubits (default 3).
+        num_qubits: total qubits in the circuit, must be at least 3.
+        scrambling_seed: deterministic seed for the scrambling circuit.
 
     Returns:
-        Tuple of (circuit, entanglement_entropy) where entanglement_entropy
-        is the von Neumann entropy of the radiation subsystem (qubit 2).
+        (circuit, entanglement_entropy_bits)
     """
-    circuit = QuantumCircuit(num_qubits)
+    if num_qubits < 3:
+        raise ValueError(f"num_qubits must be at least 3, got {num_qubits}")
 
-    # Prepare infalling matter in |1>
+    circuit = QuantumCircuit(num_qubits, name="black_hole_toy")
+
+    # Prepare infalling matter in |1>.
     circuit.x(0)
     circuit.barrier()
 
-    # Entangle matter with black hole interior
+    # Entangle matter with the black hole interior.
     circuit.h(1)
     circuit.cx(0, 1)
     circuit.barrier()
 
-    # Simulate Hawking evaporation: entangle black hole with radiation
+    # Simulate Hawking evaporation by entangling the interior with radiation.
     circuit.cx(1, 2)
     circuit.barrier()
 
-    # Scrambling: apply random unitary to black hole + radiation qubits
-    # seed fixes the scrambling circuit for reproducibility across runs and tests.
-    scrambling = random_circuit(2, depth=3, measure=False, seed=42)
+    # Deterministic scrambling on the interior and radiation subsystem.
+    scrambling = random_circuit(2, depth=3, measure=False, seed=scrambling_seed)
     circuit = circuit.compose(scrambling, qubits=[1, 2])
     circuit.barrier()
 
-    # Transpile to decompose any exotic gates into Aer's supported basis
-    from qiskit import transpile
-    simulator = AerSimulator(method="statevector")
-    circuit_copy = circuit.copy()
-    circuit_copy.save_statevector()
-    circuit_copy = transpile(circuit_copy, simulator)
-    result = simulator.run(circuit_copy).result()
-    state = Statevector(result.get_statevector())
+    # Compute the radiation entropy from the final pure state.
+    state = Statevector.from_instruction(circuit)
+    radiation_reduced = partial_trace(state, [0, 1])
+    entanglement_entropy = float(entropy(radiation_reduced, base=2))
 
-    # Compute entanglement entropy of radiation (qubit 2) by tracing out qubits 0 and 1
-    reduced = partial_trace(state, [0, 1])
-    ent = float(entropy(reduced, base=2))
-
-    return circuit, ent
+    return circuit, entanglement_entropy
 
 
 class BlackHoleToyModel:
-    """Class-based API for quantum astrophysics simulations.
+    """Educational black hole model with simple horizon-scale calculations.
 
-    Models a simplified black hole with mass and spin parameters, providing
-    methods for Hawking radiation entanglement, event horizon quantum effects,
-    and gravitational wave amplitude calculations.
-
-    Args:
-        mass: Black hole mass in solar masses (M☉). Must be > 0.
-        spin: Dimensionless spin parameter a* in [0, 1). 0 = Schwarzschild,
-              approaching 1 = maximally rotating Kerr black hole.
-
-    Raises:
-        ValueError: if mass <= 0 or spin is outside [0, 1).
+    This is a teaching tool, not a physically complete astrophysical model.
     """
 
-    # Schwarzschild radius constant: r_s = 2GM/c^2.
-    # In SI units with G=6.674e-11, M_sun=1.989e30, c=3e8:
-    #   r_s per solar mass ≈ 2953 metres
-    _RS_PER_SOLAR_MASS_METRES = 2.0 * 6.674e-11 * 1.989e30 / (3e8 ** 2)
+    _RS_PER_SOLAR_MASS_METRES = RS_PER_SOLAR_MASS_METRES
 
     def __init__(self, mass: float = 10.0, spin: float = 0.0) -> None:
         if mass <= 0:
@@ -100,10 +98,6 @@ class BlackHoleToyModel:
         self.mass = mass
         self.spin = spin
 
-    # ------------------------------------------------------------------
-    # Derived properties
-    # ------------------------------------------------------------------
-
     @property
     def schwarzschild_radius(self) -> float:
         """Schwarzschild radius in metres: r_s = 2GM/c²."""
@@ -111,88 +105,63 @@ class BlackHoleToyModel:
 
     @property
     def hawking_temperature(self) -> float:
-        """Hawking temperature in Kelvin (Schwarzschild approximation).
+        """Hawking temperature in Kelvin, Schwarzschild approximation."""
+        mass_kg = self.mass * M_SUN
+        return (HBAR * C**3) / (8.0 * math.pi * G * mass_kg * K_B)
 
-        T_H = ℏc³ / (8π G M k_B)
-        """
-        hbar = 1.0546e-34
-        c = 3e8
-        G = 6.674e-11
-        k_B = 1.381e-23
-        M_kg = self.mass * 1.989e30
-        return (hbar * c ** 3) / (8.0 * math.pi * G * M_kg * k_B)
-
-    # ------------------------------------------------------------------
-    # Quantum simulation methods
-    # ------------------------------------------------------------------
-
-    def hawking_radiation_entanglement(self, num_qubits: int = 3) -> float:
-        """Simulate Hawking radiation entanglement entropy.
-
-        Runs the black hole toy model circuit and returns the von Neumann
-        entanglement entropy of the radiation subsystem.
-
-        Args:
-            num_qubits: number of qubits in the simulation (default 3).
-
-        Returns:
-            Entanglement entropy (bits) of the radiation qubit.
-        """
-        _, ent = black_hole_toy_model(num_qubits=num_qubits)
+    def hawking_radiation_entanglement(
+        self,
+        num_qubits: int = 3,
+        scrambling_seed: int = 42,
+    ) -> float:
+        """Return the toy-model entanglement entropy of the radiation qubit."""
+        _, ent = black_hole_toy_model(
+            num_qubits=num_qubits,
+            scrambling_seed=scrambling_seed,
+        )
         return ent
 
-    def event_horizon_quantum_effects(self) -> dict:
-        """Return key quantum parameters at the event horizon.
+    def event_horizon_quantum_effects(self) -> Dict[str, float]:
+        """Return a compact summary of toy horizon-scale quantities."""
+        mass_kg = self.mass * M_SUN
+        surface_gravity = C**4 / (4.0 * G * mass_kg)
 
-        Returns a dictionary with:
-          - ``schwarzschild_radius_m``: r_s in metres
-          - ``hawking_temperature_K``: T_H in Kelvin
-          - ``spin``: dimensionless spin parameter
-          - ``surface_gravity``: κ = c⁴ / (4GM) for Schwarzschild (m/s²)
-        """
-        G = 6.674e-11
-        c = 3e8
-        M_kg = self.mass * 1.989e30
-        kappa = c ** 4 / (4.0 * G * M_kg)
         return {
+            "mass_solar_masses": self.mass,
+            "spin": self.spin,
             "schwarzschild_radius_m": self.schwarzschild_radius,
             "hawking_temperature_K": self.hawking_temperature,
-            "spin": self.spin,
-            "surface_gravity_m_s2": kappa,
+            "surface_gravity_m_s2": surface_gravity,
         }
 
     def gravitational_wave_amplitude(
-        self, distance: float = 100.0, time: float = 0.0
+        self,
+        distance: float = 100.0,
+        time: float = 0.0,
     ) -> float:
-        """Simplified gravitational wave strain amplitude h(t).
+        """Simplified gravitational-wave strain amplitude.
 
-        Uses a simplified quadrupole-inspired formula:
-            h ≈ (4G/c⁴) · (M·r_s²·ω²) / d · cos(ω·t)
-
-        where ω = c / r_s is a characteristic frequency proxy at the
-        Schwarzschild radius. This is a pedagogical toy model — for the
-        full post-Newtonian quadrupole formula see:
-        Maggiore (2007), "Gravitational Waves Vol. 1", Oxford UP, Ch. 4.
-        https://doi.org/10.1093/acprof:oso/9780198570745.001.0001
-
-        and d is the observer distance in Megaparsecs.
+        This is a pedagogical toy estimate, not a full gravitational-wave model.
+        It captures the two key tutorial ideas:
+          - strain decreases with distance
+          - the signal oscillates in time
 
         Args:
-            distance: observer distance in Megaparsecs (Mpc). Default 100 Mpc.
-            time: observation time in seconds. Default 0.
+            distance: observer distance in megaparsecs, must be positive.
+            time: observation time in seconds.
 
         Returns:
-            Dimensionless strain amplitude h (float).
+            Dimensionless strain amplitude.
         """
-        G = 6.674e-11
-        c = 3e8
-        MPC_TO_M = 3.086e22
-        M_kg = self.mass * 1.989e30
+        _require_positive(distance, "distance")
+
         r_s = self.schwarzschild_radius
-        omega = c / r_s  # characteristic orbital frequency proxy
         d_m = distance * MPC_TO_M
-        h = (4.0 * G / c ** 4) * (M_kg * r_s ** 2 * omega ** 2) / d_m
-        return h * math.cos(omega * time)
+        omega = C / r_s
+
+        # Toy scaling that preserves the correct distance dependence.
+        h0 = 2.0 * r_s / d_m
+        return h0 * math.cos(omega * time)
 
 
 __all__ = [
