@@ -1,7 +1,6 @@
 """Tests for the quantum teleportation implementation."""
 import math
 import pytest
-from qiskit.quantum_info import Statevector
 from src.teleportation import build_teleportation_circuit, quantum_teleportation
 
 
