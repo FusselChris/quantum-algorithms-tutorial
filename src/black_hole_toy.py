@@ -50,7 +50,8 @@ def black_hole_toy_model(num_qubits: int = 3) -> Tuple[QuantumCircuit, float]:
     circuit.barrier()
 
     # Scrambling: apply random unitary to black hole + radiation qubits
-    scrambling = random_circuit(2, depth=3, measure=False)
+    # seed fixes the scrambling circuit for reproducibility across runs and tests.
+    scrambling = random_circuit(2, depth=3, measure=False, seed=42)
     circuit = circuit.compose(scrambling, qubits=[1, 2])
     circuit.barrier()
 
@@ -165,10 +166,15 @@ class BlackHoleToyModel:
     ) -> float:
         """Simplified gravitational wave strain amplitude h(t).
 
-        Uses a toy quadrupole formula:
+        Uses a simplified quadrupole-inspired formula:
             h ≈ (4G/c⁴) · (M·r_s²·ω²) / d · cos(ω·t)
 
-        where ω = c / r_s (characteristic frequency at the Schwarzschild radius)
+        where ω = c / r_s is a characteristic frequency proxy at the
+        Schwarzschild radius. This is a pedagogical toy model — for the
+        full post-Newtonian quadrupole formula see:
+        Maggiore (2007), "Gravitational Waves Vol. 1", Oxford UP, Ch. 4.
+        https://doi.org/10.1093/acprof:oso/9780198570745.001.0001
+
         and d is the observer distance in Megaparsecs.
 
         Args:
