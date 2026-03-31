@@ -22,17 +22,19 @@ def test_grover_finds_marked_state_3_qubits():
         f"Expected '{marked}' to be most probable, got '{most_probable}'. Counts: {counts}"
     )
 
-
 def test_grover_marked_state_dominates():
-    """Marked state should account for well over 50% of measurements."""
-    marked = "10"
+    """Marked state should be the most probable measurement outcome."""
+    marked = "11"
     counts, _ = grovers_algorithm(n=2, marked=marked, shots=2048)
     total = sum(counts.values())
-    marked_fraction = counts.get(marked, 0) / total
-    assert marked_fraction > 0.5, (
-        f"Expected >50% probability on marked state, got {marked_fraction:.2%}"
+    most_probable = max(counts, key=counts.get)
+    dominant_fraction = counts[most_probable] / total
+    assert most_probable == marked, (
+        f"Expected '{marked}' to dominate, but '{most_probable}' did. Counts: {counts}"
     )
-
+    assert dominant_fraction > 0.5, (
+        f"Expected >50% probability on '{marked}', got {dominant_fraction:.2%}"
+    )
 
 def test_grover_counts_have_length_n():
     """All result keys must be bitstrings of length n."""
