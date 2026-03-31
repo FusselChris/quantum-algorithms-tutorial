@@ -5,6 +5,7 @@ oracle over n qubits. For flexibility, you can pass a custom oracle circuit.
 """
 from __future__ import annotations
 
+import math
 from typing import Optional, Tuple, Dict
 
 from qiskit import QuantumCircuit
@@ -18,9 +19,9 @@ def _diffusion_operator(n: int) -> QuantumCircuit:
     qc = QuantumCircuit(n, name="diffusion")
     qc.h(range(n))
     qc.x(range(n))
-    qc.h(n-1)
-    qc.mcx(list(range(n-1)), n-1)
-    qc.h(n-1)
+    qc.h(n - 1)
+    qc.mcx(list(range(n - 1)), n - 1)
+    qc.h(n - 1)
     qc.x(range(n))
     qc.h(range(n))
     return qc
@@ -30,14 +31,14 @@ def _mark_oracle_for_bitstring(n: int, marked: str) -> QuantumCircuit:
     if len(marked) != n or any(c not in "01" for c in marked):
         raise ValueError("marked must be an n-bit string of 0/1")
     qc = QuantumCircuit(n, name="oracle")
-    # Flip qubits that are 0 in the marked string so that |marked> -> |11..1>
+    # Flip qubits where the marked bit is 0 so that |marked> -> |11..1>
     for i, bit in enumerate(marked):
         if bit == '0':
             qc.x(i)
     # Phase flip on |11..1>
-    qc.h(n-1)
-    qc.mcx(list(range(n-1)), n-1)
-    qc.h(n-1)
+    qc.h(n - 1)
+    qc.mcx(list(range(n - 1)), n - 1)
+    qc.h(n - 1)
     # Undo the flips
     for i, bit in enumerate(marked):
         if bit == '0':
@@ -45,22 +46,38 @@ def _mark_oracle_for_bitstring(n: int, marked: str) -> QuantumCircuit:
     return qc
 
 
-def grovers_algorithm(n: int, marked: str = "1" , shots: int = 1024,
-                      custom_oracle: Optional[QuantumCircuit] = None,
-                      return_circuit: bool = False) -> Tuple[Dict[str, int], Optional[QuantumCircuit]]:
+def grovers_algorithm(
+    n: int,
+    marked: str = "1",
+    shots: int = 1024,
+    custom_oracle: Optional[QuantumCircuit] = None,
+    return_circuit: bool = False,
+) -> Tuple[Dict[str, int], Optional[QuantumCircuit]]:
     """Run Grover's algorithm on n qubits to find a marked state.
 
     Args:
-        n: number of search qubits
+        n: number of search qubits.
         marked: n-bit string of the marked item. Ignored if custom_oracle provided.
-        shots: number of shots on simulator
-        custom_oracle: optional custom phase oracle QuantumCircuit on n qubits
-        return_circuit: also return full circuit when True
+        shots: number of shots on the simulator.
+        custom_oracle: optional custom phase oracle QuantumCircuit on n qubits.
+        return_circuit: also return the full circuit when True.
+
+    Returns:
+        Tuple of (counts, circuit_or_None).
+
+    Raises:
+        ValueError: if n < 1, or if marked length != n when no custom_oracle given.
     """
     if n < 1:
         raise ValueError("n must be >= 1")
 
-    oracle = custom_oracle if custom_oracle is not None else _mark_oracle_for_bitstring(n, marked.zfill(n))
+    if custom_oracle is None and len(marked) != n:
+        raise ValueError(
+            f"marked string length {len(marked)} does not match n={n}. "
+            f"Provide an n-bit string or use custom_oracle."
+        )
+
+    oracle = custom_oracle if custom_oracle is not None else _mark_oracle_for_bitstring(n, marked)
     diffusion = _diffusion_operator(n)
 
     qc = QuantumCircuit(n, n, name="grover")
@@ -68,8 +85,7 @@ def grovers_algorithm(n: int, marked: str = "1" , shots: int = 1024,
     qc.h(range(n))
 
     # Number of Grover iterations ~ floor(pi/4 * sqrt(N))
-    import math
-    iterations = max(1, int(math.floor((math.pi/4) * (2**(n/2)))))
+    iterations = max(1, int(math.floor((math.pi / 4) * (2 ** (n / 2)))))
 
     for _ in range(iterations):
         qc.compose(oracle, range(n), inplace=True)
