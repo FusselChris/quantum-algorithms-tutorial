@@ -20,7 +20,7 @@ This repository provides practical implementations of fundamental quantum algori
 - **Grover's Search Algorithm**: Optimized quantum search with correctness-verified performance analysis
 - **Black Hole Toy Model**: A reproducible educational model for scrambling, entanglement entropy, and horizon-scale quantities. Deliberately a toy model, not a full semiclassical gravity solver.
 - **Interactive Notebooks**: Step-by-step tutorials with explanations
-- **Unit Tests**: 26-test suite with 99% code coverage across all modules
+- **Unit Tests**: 28-test suite covering circuit structure, correctness, fidelity, and edge cases
 - **CI/CD Pipeline**: GitHub Actions workflow running on Python 3.10, 3.11, and 3.12
 
 ## Installation
