@@ -54,10 +54,12 @@ def black_hole_toy_model(num_qubits: int = 3) -> Tuple[QuantumCircuit, float]:
     circuit = circuit.compose(scrambling, qubits=[1, 2])
     circuit.barrier()
 
-    # Simulate and extract statevector
+    # Transpile to decompose any exotic gates into Aer's supported basis
+    from qiskit import transpile
     simulator = AerSimulator(method="statevector")
     circuit_copy = circuit.copy()
     circuit_copy.save_statevector()
+    circuit_copy = transpile(circuit_copy, simulator)
     result = simulator.run(circuit_copy).result()
     state = Statevector(result.get_statevector())
 
