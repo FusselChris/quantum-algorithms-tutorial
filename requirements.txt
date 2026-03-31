@@ -1,11 +1,12 @@
 # All versions pinned for reproducibility and security.
+# Minimum Python version: 3.10 (required by numpy>=2.x and scipy>=1.14)
 
 # Core Quantum Computing Libraries
 qiskit==1.2.0
 qiskit-aer==0.15.1
 
 # Scientific Computing
-numpy==2.1.1
+numpy==2.0.2
 scipy==1.14.1
 
 # Visualization
