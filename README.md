@@ -113,9 +113,9 @@ quantum-algorithms-tutorial/
 │   ├── grover.py            # Grover's search algorithm
 │   └── black_hole_toy.py    # Black hole toy model and astrophysics simulations
 ├── tests/
-│   ├── test_teleportation.py  # 7 tests — circuit structure, correctness, edge cases
+│   ├── test_teleportation.py  # 9 tests — circuit structure, correctness, fidelity
 │   ├── test_grover.py         # 7 tests — marked state correctness, dominance, validation
-│   └── test_black_hole_toy.py # 12 tests — entropy, physics properties, validation
+│   └── test_black_hole_toy.py # 16 tests — entropy, physics properties, validation
 ├── .github/
 │   └── workflows/
 │       └── ci.yml             # CI: Python 3.10 / 3.11 / 3.12
