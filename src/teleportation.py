@@ -3,17 +3,24 @@
 This module provides a function `quantum_teleportation` that builds and runs the
 standard 3-qubit quantum teleportation protocol. It returns the result counts and
 (optionally) the circuit for inspection/drawing.
+
+Protocol summary:
+  1. Prepare arbitrary input state |psi> = alpha|0> + beta|1> on qubit q0.
+  2. Create Bell pair between q1 (Alice) and q2 (Bob).
+  3. Alice performs Bell-state measurement on (q0, q1), collapsing to 2 classical bits.
+  4. Bob applies conditional X and Z corrections on q2 based on Alice's bits.
+  5. Bob's qubit q2 now holds the original state |psi>.
 """
 from __future__ import annotations
 
 from typing import Dict, Optional, Tuple
 
-from qiskit import QuantumCircuit
+import numpy as np
+from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit.quantum_info import Statevector
 try:
-    # Aer moved under qiskit_aer in recent versions
     from qiskit_aer import Aer
-except Exception:  # pragma: no cover - fallback for older installs
+except Exception:  # pragma: no cover
     from qiskit import Aer  # type: ignore
 
 
@@ -21,62 +28,84 @@ def build_teleportation_circuit(alpha: complex = 1.0, beta: complex = 0.0) -> Qu
     """Build the standard 3-qubit quantum teleportation circuit.
 
     Qubit mapping:
-      - q0: Alice's input qubit (|psi> = alpha|0> + beta|1>)
-      - q1: Alice's half of the Bell pair
-      - q2: Bob's half of the Bell pair (target for teleported state)
+      - q[0]: Alice's input qubit (|psi> = alpha|0> + beta|1>)
+      - q[1]: Alice's half of the Bell pair
+      - q[2]: Bob's half of the Bell pair (receives teleported state)
+
+    Classical bit mapping:
+      - c[0]: Alice's measurement of q[0] — controls Bob's Z correction
+      - c[1]: Alice's measurement of q[1] — controls Bob's X correction
 
     Args:
-        alpha: amplitude of |0> for the state to teleport
-        beta: amplitude of |1> for the state to teleport
+        alpha: amplitude of |0> for the state to teleport.
+        beta:  amplitude of |1> for the state to teleport.
 
     Returns:
-        QuantumCircuit implementing teleportation with classical bits c0,c1 for Alice's measurements.
+        QuantumCircuit implementing the full teleportation protocol.
     """
-    qc = QuantumCircuit(3, 2, name="teleportation")
+    q = QuantumRegister(3, 'q')
+    c = ClassicalRegister(2, 'c')
+    qc = QuantumCircuit(q, c, name="teleportation")
 
-    # Prepare arbitrary input state on q0 with Statevector initialize
+    # --- Step 1: Prepare input state on q[0] ---
     sv = Statevector([alpha, beta]).data
-    qc.initialize(sv, 0)
+    qc.initialize(sv, q[0])
+    qc.barrier(label="init")
 
-    # Create Bell pair between q1 and q2 (Alice-Bob entanglement)
-    qc.h(1)
-    qc.cx(1, 2)
+    # --- Step 2: Create Bell pair between q[1] and q[2] ---
+    qc.h(q[1])
+    qc.cx(q[1], q[2])
+    qc.barrier(label="bell_pair")
 
-    # Bell-state measurement (BSM) on (q0, q1)
-    qc.cx(0, 1)
-    qc.h(0)
+    # --- Step 3: Bell-state measurement on (q[0], q[1]) ---
+    qc.cx(q[0], q[1])
+    qc.h(q[0])
+    qc.barrier(label="bsm")
 
-    # Measure Alice's qubits -> classical bits c0 (from q0) and c1 (from q1)
-    qc.measure(0, 0)
-    qc.measure(1, 1)
+    # Measure Alice's qubits into classical register
+    qc.measure(q[0], c[0])   # c[0] <- q[0] measurement
+    qc.measure(q[1], c[1])   # c[1] <- q[1] measurement
+    qc.barrier(label="measure")
 
-    # Conditional corrections on Bob's qubit q2
-    qc.x(2).c_if(qc.cregs[0], 0b10)  # if c1 == 1
-    qc.z(2).c_if(qc.cregs[0], 0b01)  # if c0 == 1
+    # --- Step 4: Bob's conditional corrections on q[2] ---
+    # If c[1] == 1 (q[1] was |1>), apply X gate
+    # If c[0] == 1 (q[0] was |1>), apply Z gate
+    with qc.if_test((c[1], 1)):
+        qc.x(q[2])
+    with qc.if_test((c[0], 1)):
+        qc.z(q[2])
 
     return qc
 
 
-def quantum_teleportation(alpha: complex = 1.0, beta: complex = 0.0, shots: int = 1024,
-                          return_circuit: bool = False) -> Tuple[Dict[str, int], Optional[QuantumCircuit]]:
+def quantum_teleportation(
+    alpha: complex = 1.0,
+    beta: complex = 0.0,
+    shots: int = 1024,
+    return_circuit: bool = False,
+) -> Tuple[Dict[str, int], Optional[QuantumCircuit]]:
     """Run quantum teleportation for input state alpha|0> + beta|1>.
 
+    Normalizes the input amplitudes automatically if they are not already
+    unit-norm. Uses the Aer qasm_simulator backend.
+
     Args:
-        alpha: amplitude for |0>
-        beta: amplitude for |1>
-        shots: number of shots to execute on qasm simulator
-        return_circuit: when True, also return the built QuantumCircuit
+        alpha: amplitude for |0>.
+        beta:  amplitude for |1>.
+        shots: number of shots to execute on the simulator.
+        return_circuit: when True, also return the built QuantumCircuit.
 
     Returns:
-        (counts, circuit?) where counts are measurement results of classical bits c0c1.
-        The teleported state ends on qubit q2; to verify, one can append measurements of q2
-        in computational basis or perform state tomography in separate routines.
+        Tuple of (counts, circuit_or_None). counts maps classical bit
+        strings (c0 c1) to observed frequencies. circuit is the full
+        QuantumCircuit when return_circuit=True, else None.
+
+    Raises:
+        ValueError: if both amplitudes are zero (un-normalizable state).
     """
-    # Normalize in case the user passed non-normalized amplitudes
-    import numpy as np
-    norm = np.sqrt(abs(alpha)**2 + abs(beta)**2)
+    norm = np.sqrt(abs(alpha) ** 2 + abs(beta) ** 2)
     if norm == 0:
-        raise ValueError("State amplitudes cannot both be zero")
+        raise ValueError("State amplitudes cannot both be zero.")
     alpha_n, beta_n = alpha / norm, beta / norm
 
     qc = build_teleportation_circuit(alpha_n, beta_n)
