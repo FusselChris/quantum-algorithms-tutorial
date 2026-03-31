@@ -103,27 +103,28 @@ These simulations are intentionally simplified. They are meant to teach qualitat
 jupyter notebook notebooks/quantum_for_astrophysics.ipynb
 ```
 
-### Directory Structure
+## Directory Structure
 
+```text
 quantum-algorithms-tutorial/
 ├── src/
-│ ├── _init_.py
-│ ├── teleportation.py # Quantum teleportation implementation
-│ ├── grover.py # Grover's search algorithm
-│ └── black_hole_toy.py # Black hole toy model and astrophysics simulations
+│   ├── __init__.py          # Marks src as a Python package
+│   ├── teleportation.py     # Quantum teleportation implementation
+│   ├── grover.py            # Grover's search algorithm
+│   └── black_hole_toy.py    # Black hole toy model and astrophysics simulations
 ├── tests/
-│ ├── test_teleportation.py # 7 tests — circuit structure, correctness, edge cases
-│ ├── test_grover.py # 7 tests — marked state correctness, dominance, validation
-│ └── test_black_hole_toy.py # 12 tests — entropy, physics properties, validation
+│   ├── test_teleportation.py  # 7 tests — circuit structure, correctness, edge cases
+│   ├── test_grover.py         # 7 tests — marked state correctness, dominance, validation
+│   └── test_black_hole_toy.py # 12 tests — entropy, physics properties, validation
 ├── .github/
-│ └── workflows/
-│ └── ci.yml # CI: Python 3.10 / 3.11 / 3.12
+│   └── workflows/
+│       └── ci.yml             # CI: Python 3.10 / 3.11 / 3.12
 ├── notebooks/
-│ ├── tutorial.ipynb
-│ └── quantum_for_astrophysics.ipynb
+│   ├── tutorial.ipynb
+│   └── quantum_for_astrophysics.ipynb
 ├── requirements.txt
 └── README.md
-
+```
 
 ## Testing
 
