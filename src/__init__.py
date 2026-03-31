@@ -1,18 +1,26 @@
 """Quantum Algorithms Tutorial Package.
 
 This package contains implementations of fundamental quantum algorithms
-including quantum teleportation and Grover's search algorithm.
+including quantum teleportation, Grover's search, and a black hole toy model
+for astrophysics simulations.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = "FusselChris"
-__email__ = "contact@example.com"
 
-# Import main algorithm classes for easy access
-from .teleportation import QuantumTeleportation
-from .grover import GroverSearch
+# Teleportation
+from .teleportation import build_teleportation_circuit, quantum_teleportation
+
+# Grover's Search
+from .grover import grovers_algorithm
+
+# Black Hole Toy Model
+from .black_hole_toy import black_hole_toy_model, BlackHoleToyModel
 
 __all__ = [
-    'QuantumTeleportation',
-    'GroverSearch',
+    "build_teleportation_circuit",
+    "quantum_teleportation",
+    "grovers_algorithm",
+    "black_hole_toy_model",
+    "BlackHoleToyModel",
 ]
