@@ -17,7 +17,7 @@ from typing import Dict, Optional, Tuple
 
 import numpy as np
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from qiskit.quantum_info import Statevector
+from qiskit.quantum_info import Statevector, partial_trace, state_fidelity
 try:
     from qiskit_aer import Aer
 except Exception:  # pragma: no cover
@@ -120,7 +120,54 @@ def quantum_teleportation(
     return counts, None
 
 
+def verify_teleportation_fidelity(
+    alpha: complex = 1.0,
+    beta: complex = 0.0,
+) -> float:
+    """Verify teleportation fidelity with a measurement-free reference circuit.
+
+    Builds a coherent version of the teleportation protocol and compares
+    Bob's final qubit to the intended input state without collapsing the
+    state by measurement.
+
+    Args:
+        alpha: amplitude for |0>.
+        beta:  amplitude for |1>.
+
+    Returns:
+        Fidelity in [0, 1]. A value > 0.999 confirms correct teleportation.
+
+    Raises:
+        ValueError: if both amplitudes are zero.
+    """
+    norm = np.sqrt(abs(alpha) ** 2 + abs(beta) ** 2)
+    if norm == 0:
+        raise ValueError("State amplitudes cannot both be zero.")
+
+    alpha_n, beta_n = alpha / norm, beta / norm
+
+    qc = QuantumCircuit(3, name="teleportation_fidelity")
+    qc.initialize([alpha_n, beta_n], 0)
+
+    # Standard teleportation preparation.
+    qc.h(1)
+    qc.cx(1, 2)
+    qc.cx(0, 1)
+    qc.h(0)
+
+    # Coherent correction stage (no measurement collapse).
+    qc.cx(1, 2)
+    qc.cz(0, 2)
+
+    final_state = Statevector.from_instruction(qc)
+    bob_state = partial_trace(final_state, [0, 1])
+    target_state = Statevector([alpha_n, beta_n])
+
+    return float(state_fidelity(bob_state, target_state))
+
+
 __all__ = [
     "build_teleportation_circuit",
     "quantum_teleportation",
+    "verify_teleportation_fidelity",
 ]
