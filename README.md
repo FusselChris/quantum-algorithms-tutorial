@@ -18,7 +18,7 @@ This repository provides practical implementations of fundamental quantum algori
 
 - **Quantum Teleportation**: Complete implementation with circuit visualization
 - **Grover's Search Algorithm**: Optimized quantum search with correctness-verified performance analysis
-- **Black Hole Toy Model**: Quantum simulation of simplified black hole physics and gravitational wave patterns
+- **Black Hole Toy Model**: A reproducible educational model for scrambling, entanglement entropy, and horizon-scale quantities. Deliberately a toy model, not a full semiclassical gravity solver.
 - **Interactive Notebooks**: Step-by-step tutorials with explanations
 - **Unit Tests**: 26-test suite with 99% code coverage across all modules
 - **CI/CD Pipeline**: GitHub Actions workflow running on Python 3.10, 3.11, and 3.12
@@ -81,17 +81,21 @@ print(f"Hawking temperature: {effects['hawking_temperature_K']:.2e} K")
 
 ### Astrophysics Quantum Simulations
 
-The repository includes quantum simulations for astrophysical phenomena:
+The repository includes educational quantum-inspired models for astrophysical ideas.
 
 #### Black Hole Physics
-- Hawking radiation entanglement simulation
-- Event horizon quantum effects
-- Information paradox demonstrations
+- Toy-model scrambling and Hawking-radiation entanglement
+- Event-horizon-scale quantities such as Schwarzschild radius and Hawking temperature
+- Information-paradox style demonstrations
 
 #### Gravitational Waves
-- Gravitational wave strain amplitude modelling
-- Distance scaling verification
-- Quantum entanglement analysis
+- Simplified strain-amplitude scaling with distance
+- Time-dependent oscillatory behaviour
+- Quantum-entanglement themed pedagogical analogies
+
+### Physics Note
+
+These simulations are intentionally simplified. They are meant to teach qualitative relationships and coding patterns, not to replace real numerical relativity or semiclassical gravity calculations.
 
 ### Running the Astrophysics Notebook
 
