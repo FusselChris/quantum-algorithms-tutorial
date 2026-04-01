@@ -1,14 +1,15 @@
-![CI](https://github.com/FusselChris/quantum-algorithms-tutorial/actions/workflows/ci.yml/badge.svg)
-
-> **⚠️ IMPORTANT SECURITY WARNING ⚠️**
->
-> **This repository is for educational use only and is not production-hardened.**
->
-> **DO NOT use this code for quantum-cryptographic or security-critical production applications without an independent security audit.**
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)
+![Qiskit 1.2](https://img.shields.io/badge/Qiskit-1.2-orange)
+![Tests](https://img.shields.io/badge/Tests-28%20passing-brightgreen)
+[![CI](https://github.com/FusselChris/quantum-algorithms-tutorial/actions/workflows/ci.yml/badge.svg)](https://github.com/FusselChris/quantum-algorithms-tutorial/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Quantum Algorithms Tutorial
 
-A hands-on tutorial repository demonstrating quantum algorithms including Quantum Teleportation, Grover's Search, and quantum simulations for astrophysics using Qiskit — targeted at technical learners new to quantum programming.
+**A clean, well-tested, production-style educational package** demonstrating core quantum algorithms (Teleportation + Grover’s Search) with a creative astrophysics toy model — built to showcase strong software engineering + quantum computing skills.
+
+> **Educational project only**  
+> This repository is for learning and demonstration. The code is intentionally simplified and not intended for production cryptographic or security-critical use.
 
 ## Overview
 
