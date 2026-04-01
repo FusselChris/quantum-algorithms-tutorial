@@ -21,11 +21,11 @@ I created this repo to bridge classical programming skills with quantum computin
 ## Features
 
 - **Quantum Teleportation**: Complete implementation with circuit visualization
-- <img src="images/teleportation_circuit.png" width="600" alt="Teleportation circuit">
+![Teleportation circuit](https://raw.githubusercontent.com/FusselChris/quantum-algorithms-tutorial/main/images/teleportation_circuit.png)
 - **Grover's Search Algorithm**: Optimized quantum search with correctness-verified performance analysis
-- <img src="images/grover_circuit.png" width="600" alt="Grover circuit">
+![Grover circuit](https://raw.githubusercontent.com/FusselChris/quantum-algorithms-tutorial/main/images/grover_circuit.png)
 - **Black Hole Toy Model**: A reproducible educational model for scrambling, entanglement entropy, and horizon-scale quantities. Deliberately a toy model, not a full semiclassical gravity solver.
-- <img src="images/black_hole_circuit.png" width="600" alt="Black Hole circuit">
+![Black Hole circuit](https://raw.githubusercontent.com/FusselChris/quantum-algorithms-tutorial/main/images/black_hole_circuit.png)
 - **Interactive Notebooks**: Step-by-step tutorials with explanations
 - **Unit Tests**: 28-test suite covering circuit structure, correctness, fidelity, and edge cases
 - **CI/CD Pipeline**: GitHub Actions workflow running on Python 3.10, 3.11, and 3.12
@@ -57,6 +57,7 @@ jupyter notebook notebooks/tutorial.ipynb
 
 ## Usage
 **Interactive Notebooks:** * [Open tutorial.ipynb in nbviewer](https://nbviewer.org/github/FusselChris/quantum-algorithms-tutorial/blob/main/notebooks/tutorial.ipynb)
+* [Open quantum_for_astrophysics.ipynb in nbviewer](https://nbviewer.org/github/FusselChris/quantum-algorithms-tutorial/blob/main/notebooks/quantum_for_astrophysics.ipynb)
 
 ### Quick Start
 
