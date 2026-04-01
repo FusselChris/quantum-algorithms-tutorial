@@ -15,11 +15,17 @@
 
 This repository provides practical implementations of fundamental quantum algorithms with comprehensive explanations and interactive Jupyter notebooks. Perfect for developers, researchers, and students looking to understand quantum computing concepts through hands-on coding, including applications to astrophysical phenomena like black holes and gravitational waves.
 
+## Built for learning & demonstration
+I created this repo to bridge classical programming skills with quantum computing. It includes a 28-test suite, full CI/CD, and a creative black-hole toy model that connects quantum information theory to astrophysics — exactly the kind of interdisciplinary thinking valued in physics, CS, and quantum engineering programs.
+
 ## Features
 
 - **Quantum Teleportation**: Complete implementation with circuit visualization
+- <img src="images/teleportation_circuit.png" width="600" alt="Teleportation circuit">
 - **Grover's Search Algorithm**: Optimized quantum search with correctness-verified performance analysis
+- <img src="images/grover_circuit.png" width="600" alt="Grover circuit">
 - **Black Hole Toy Model**: A reproducible educational model for scrambling, entanglement entropy, and horizon-scale quantities. Deliberately a toy model, not a full semiclassical gravity solver.
+- <img src="images/black_hole_circuit.png" width="600" alt="Black Hole circuit">
 - **Interactive Notebooks**: Step-by-step tutorials with explanations
 - **Unit Tests**: 28-test suite covering circuit structure, correctness, fidelity, and edge cases
 - **CI/CD Pipeline**: GitHub Actions workflow running on Python 3.10, 3.11, and 3.12
@@ -50,6 +56,7 @@ jupyter notebook notebooks/tutorial.ipynb
 ```
 
 ## Usage
+**Interactive Notebooks:** * [Open tutorial.ipynb in nbviewer](https://nbviewer.org/github/FusselChris/quantum-algorithms-tutorial/blob/main/notebooks/tutorial.ipynb)
 
 ### Quick Start
 
